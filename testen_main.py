@@ -41,13 +41,13 @@ def get_players_from_pool(pool_url):
             # Calculate the index (wins/played)
             index = wins / played if played > 0 else 0
             pool_players.append({
-                'name': name,
                 'index': index,
+                'pool': pool_title,
+                'rank': rank,
+                'name': name,
                 'played': played,
                 'wins': wins,
-                'score_difference': score_difference,
-                'rank': rank,
-                'pool': pool_title
+                'score_difference': score_difference
             })
         return pool_players
     else:
@@ -67,14 +67,29 @@ def sort_players(players):
     return players
 
 
-@app.get("/get_player_data/")
-async def get_player_data_endpoint(tournament_id: str, stage_id: str):
+def get_player_data_endpoint(tournament_id: str, stage_id: str):
     return get_player_data(tournament_id, stage_id)
 
 
-@app.get("/get_reduced_player_data/")
-async def get_reduced_player_data_endpoint(tournament_id: str, stage_id: str):
+def get_reduced_player_data_endpoint(tournament_id: str, stage_id: str):
     player_data = get_player_data(tournament_id, stage_id)
     reduced_data = [{"index": player["index"], "name": player["name"],
                      "rank": player["rank"]} for player in player_data]
     return reduced_data
+
+
+# Test the functions
+if __name__ == "__main__":
+    tournament_id = "6965416849174970368"
+    stage_id = "6972898317661159424"
+
+    print("Full Player Data:")
+    full_player_data = get_player_data_endpoint(tournament_id, stage_id)
+    for player in full_player_data:
+        print(player)
+
+    print("\nReduced Player Data:")
+    reduced_player_data = get_reduced_player_data_endpoint(
+        tournament_id, stage_id)
+    for player in reduced_player_data:
+        print(player)
